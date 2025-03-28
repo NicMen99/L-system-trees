@@ -17,6 +17,8 @@ add_executable(${PROJECT_NAME}
         include/utils.h
         src/camera.cpp
         include/camera.h
+        src/lindenmayer.cpp
+        include/lindenmayer.h
 )
 
 target_link_libraries(${PROJECT_NAME} glfw)

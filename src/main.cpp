@@ -10,6 +10,7 @@
 
 #include "utils.h"
 #include "camera.h"
+#include "lindenmayer.h"
 
 // FPS related values
 float deltaTime = 0.0f;
@@ -23,6 +24,21 @@ bool firstMouse = true;
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 int main() {
+    std::set<char> characters = {'A', 'a', 'B', 'b'};
+    std::map<char, std::string> production_rules ={
+        {'A', "aB" },
+        {'a', "bA"},
+        {'B', "A"},
+        {'b', "a"}
+    };
+    auto l = Lindenmayer(characters, production_rules);
+
+    auto result = l.generate("A", 4);
+
+    std::cout << result << std::endl;
+}
+
+int _main() {
     glfwInit(); //Initialization of GLFW
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
