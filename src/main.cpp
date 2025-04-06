@@ -27,7 +27,7 @@ float lastx = 640, lasty = 360;
 bool firstMouse = true;
 
 // Camera
-Camera camera(glm::vec3(0.0f, 0.0f, 10.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, -5.0f));
 
 int main() {
     glfwInit(); //Initialization of GLFW
@@ -62,7 +62,8 @@ int main() {
 
     // Setting depth test
     glEnable(GL_DEPTH_TEST);
-    //glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
 
     Shader shader = Shader("shaders/vshader.glsl", "shaders/fshader.glsl");
 
@@ -75,13 +76,14 @@ int main() {
     };
     auto l = Lindenmayer(characters, production_rules);
 
-    auto result = l.generate("A", 1);
+    auto result = l.generate("A", 3);
     //std::string result = "A";
 
-    std::shared_ptr<Branch> sBranch = std::make_shared<Branch>(128);
+    std::shared_ptr<Branch> sBranch = std::make_shared<Branch>(8);
     Interpreter turtle = Interpreter(sBranch);
     std::vector<Mesh> meshes;
-    meshes = turtle.read_string(result);
+    std::vector<glm::mat4> transforms;
+    turtle.read_string(result, meshes, transforms);
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -108,10 +110,9 @@ int main() {
         shader.setMat4("projection", projection);
 
         // Stuff
-        glm::mat4 model = glm::mat4(1.0f);
-        shader.setMat4("model", model);
-        for (Mesh m : meshes) {
-            m.render();
+        for (int i = 0; i < meshes.size(); i++) {
+            shader.setMat4("model", transforms[i]);
+            meshes[i].render();
         }
 
         // events and swap buffers

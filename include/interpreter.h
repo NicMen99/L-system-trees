@@ -11,6 +11,8 @@
 
 #include "abstract_builder.h"
 #include "branch_builder.h"
+#include <glm/glm.hpp>
+#include <glm/ext/matrix_transform.hpp>
 
 struct TurtleState {
     glm::vec3 position;
@@ -23,7 +25,7 @@ public:
     Interpreter(std::shared_ptr<Branch> builder);
     ~Interpreter() = default;
 
-    std::vector<Mesh> read_string(const std::string & predicate);
+    void read_string(const std::string & predicate, std::vector<Mesh>& meshes, std::vector<glm::mat4> & transforms);
 private:
     std::map<const char, std::shared_ptr<Drawer>> builder_map;
     float movement_step;
