@@ -11,7 +11,6 @@ class Drawer {
 public:
     virtual void build_branch(float height, float R, float r) {}
     virtual void build_leaf() {}
-    virtual void build_terminal() {}
 
     virtual ~Drawer() = default;
     virtual Mesh getResult() {return Mesh();}

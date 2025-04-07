@@ -80,7 +80,8 @@ int main() {
     //std::string result = "A";
 
     std::shared_ptr<Branch> sBranch = std::make_shared<Branch>(8);
-    Interpreter turtle = Interpreter(sBranch);
+    std::shared_ptr<Leaf> sLeaf = std::make_shared<Leaf>();
+    Interpreter turtle = Interpreter(sBranch, sLeaf);
     std::vector<Mesh> meshes;
     std::vector<glm::mat4> transforms;
     turtle.read_string(result, meshes, transforms);

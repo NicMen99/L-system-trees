@@ -28,6 +28,8 @@ add_executable(${PROJECT_NAME}
         include/mesh.h
         src/shader.cpp
         include/shader.h
+        src/leaf_builder.cpp
+        include/leaf_builder.h
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE lib/glfw-3.4/include)
