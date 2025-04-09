@@ -62,26 +62,23 @@ int main() {
 
     // Setting depth test
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CCW);
+    //glEnable(GL_CULL_FACE);
+    //glFrontFace(GL_CCW);
 
     Shader shader = Shader("shaders/vshader.glsl", "shaders/fshader.glsl");
 
-    std::set<char> characters = {'A', 'a', 'B', 'b'};
+    std::set<char> characters = {'F', '+', '-', '[', ']', 'X'};
     std::map<char, std::string> production_rules ={
-        {'A', "aB" },
-        {'a', "bA"},
-        {'B', "A"},
-        {'b', "a"}
+        {'X', "F[+X]F[-X]+X" },
+        {'F', "FF"}
     };
     auto l = Lindenmayer(characters, production_rules);
 
-    auto result = l.generate("A", 3);
-    //std::string result = "A";
+    auto result = l.generate("X", 1, true);
 
     std::shared_ptr<Branch> sBranch = std::make_shared<Branch>(8);
     std::shared_ptr<Leaf> sLeaf = std::make_shared<Leaf>();
-    Interpreter turtle = Interpreter(sBranch, sLeaf);
+    Interpreter turtle = Interpreter(sBranch, sLeaf, 20.0f);
     std::vector<Mesh> meshes;
     std::vector<glm::mat4> transforms;
     turtle.read_string(result, meshes, transforms);

@@ -18,7 +18,9 @@ public:
 
     std::string iterate(const std::string &current_string);
 
-    std::string generate(const std::string &axiom, unsigned int n_iterations);
+    std::string cleanup(const std::string &current_string);
+
+    std::string generate(const std::string &axiom, unsigned int n_iterations, bool need_cleanup = false);
 private:
     std::set<char> alphabeth;
     std::map<char, std::string> production_rules;
