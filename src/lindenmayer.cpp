@@ -26,7 +26,7 @@ std::string Lindenmayer::cleanup(const std::string &current_string) {
                 next_string += c;
             }
             else {
-                next_string += 'F';
+                next_string += 'P';
             }
         }
         return next_string;

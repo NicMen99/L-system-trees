@@ -67,18 +67,24 @@ int main() {
 
     Shader shader = Shader("shaders/vshader.glsl", "shaders/fshader.glsl");
 
-    std::set<char> characters = {'F', '+', '-', '[', ']', 'X'};
+    std::set<char> characters = {'P', 'F', 'L', '+', '-', '&', '^', '/', '\\', '[', ']', 'X'};
     std::map<char, std::string> production_rules ={
-        {'X', "F[+X]F[-X]+X" },
-        {'F', "FF"}
+        {'P', "[&FP]/////[&FP]///////[&FP]" },
+        {'F', "X/////F"},
+        {'X', "F"}
     };
+
+    //std::map<char, std::string> production_rules = {
+    //    {'X', "F[+X]F[-X]+X"},
+    //    {'F', "FF"}
+    //};
     auto l = Lindenmayer(characters, production_rules);
 
-    auto result = l.generate("X", 1, true);
+    auto result = l.generate("P", 2, true);
 
-    std::shared_ptr<Branch> sBranch = std::make_shared<Branch>(8);
+    std::shared_ptr<Branch> sBranch = std::make_shared<Branch>(6);
     std::shared_ptr<Leaf> sLeaf = std::make_shared<Leaf>();
-    Interpreter turtle = Interpreter(sBranch, sLeaf, 20.0f);
+    Interpreter turtle = Interpreter(sBranch, sLeaf, 22.5f);
     std::vector<Mesh> meshes;
     std::vector<glm::mat4> transforms;
     turtle.read_string(result, meshes, transforms);

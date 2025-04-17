@@ -11,8 +11,8 @@
 
 class Lindenmayer {
 public:
-    Lindenmayer(const std::set<char> &alphabeth, const std::map<char, std::string> &production_rules)
-        : alphabeth(alphabeth),
+    Lindenmayer(const std::set<char> &alphabet, const std::map<char, std::string> &production_rules)
+        : alphabet(alphabet),
           production_rules(production_rules) {
     }
 
@@ -22,7 +22,7 @@ public:
 
     std::string generate(const std::string &axiom, unsigned int n_iterations, bool need_cleanup = false);
 private:
-    std::set<char> alphabeth;
+    std::set<char> alphabet;
     std::map<char, std::string> production_rules;
 };
 

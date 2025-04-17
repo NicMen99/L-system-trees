@@ -13,18 +13,24 @@
 #include "abstract_builder.h"
 #include "branch_builder.h"
 #include <glm/glm.hpp>
-#include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "leaf_builder.h"
 
 struct TurtleState {
+    // Per la traslazione
     glm::vec3 position;
-    glm::vec3 direction;
-    float rotation;
+    // Per rotazione
+    glm::quat orientation;
+    // Per trovare la direzione corretta dove far muovere la turtle
+    glm::vec3 up;
+    glm::vec3 forward;
+    glm::vec3 right;
 };
 
 class Interpreter {
 public:
-    Interpreter(std::shared_ptr<Branch> branch, std::shared_ptr<Leaf> leaf, float angle = 10.0f, float radius = 1.0f, float length = 5.0f, float radius_decay = 0.9f, float length_decay = 0.9f);
+    Interpreter(std::shared_ptr<Branch> branch, std::shared_ptr<Leaf> leaf, float angle = 10.0f, float radius = 0.05f, float length = 1.0f, float radius_decay = 0.9f, float length_decay = 0.9f);
     ~Interpreter() = default;
 
     void read_string(const std::string & predicate, std::vector<Mesh>& meshes, std::vector<glm::mat4> & transforms);

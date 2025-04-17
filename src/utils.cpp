@@ -36,7 +36,7 @@ void processInput(GLFWwindow *window) {
         camera.ProcessKeyboard(RIGHT, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-        camera.movementSpeed = 5.0f;
+        camera.movementSpeed = 15.0f;
     }
     else {
         camera.movementSpeed = 2.5f;

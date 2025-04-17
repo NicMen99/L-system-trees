@@ -7,83 +7,157 @@
 #include <utility>
 
 Interpreter::Interpreter(std::shared_ptr<Branch> branch, std::shared_ptr<Leaf> leaf, float angle, float radius, float length, float radius_decay, float length_decay) : radius(radius), length(length), radius_decay(radius_decay), length_decay(length_decay) {
-    //this->builder_map['A'] = branch;
-    //this->builder_map['a'] = branch;
-    //this->builder_map['B'] = leaf;
-    //this->builder_map['b'] = leaf;
     this->builder_map['F'] = branch;
+    this->builder_map['P'] = branch;
+    this->builder_map['L'] = leaf;
 
     TurtleState s = TurtleState();
     s.position = glm::vec3(0.0f);
-    s.direction = glm::vec3(0.0f, 1.0f, 0.0f);
-    s.rotation = 0.0f;
-    this->movement_step = 5.0f;
+    s.orientation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+    s.forward = glm::vec3(0.0f, 1.0f, 0.0f);
+    s.up = glm::vec3(0.0f, 0.0f,1.0f);
+    s.right = glm::vec3(1.0f, 0.0f, 0.0f);
+    this->movement_step = this->length;
     this->angle = glm::radians(angle);
     this->state = s;
 }
 
 void Interpreter::read_string(const std::string &predicate, std::vector<Mesh>& meshes, std::vector<glm::mat4>& transforms) {
-    TurtleState current =this->state;
-    glm::mat4 rot;
+    TurtleState current = this->state;
+    glm::quat rot;
+    glm::mat4 translation, rotation;
     for (char c : predicate) {
         switch (c) {
-            case 'A':
-                transforms.push_back(glm::translate(glm::mat4(1.0f), this->state.position));
-                this->builder_map['A']->build_branch(5.0f, 1.0f, 1.0f);
-                this->state.position = current.position + this->movement_step * current.direction;
-                current = this->state;
-                meshes.push_back(this->builder_map['A']->getResult());
-                break;
-            case 'a':
-                transforms.push_back(glm::rotate(glm::translate(glm::mat4(1.0f), this->state.position), glm::radians(15.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
-                this->builder_map['a']->build_branch(2.0f, 1.0f, 1.0f);
-                this->state.position = current.position + this->movement_step * current.direction;
-                current = this->state;
-                meshes.push_back(this->builder_map['a']->getResult());
-                break;
-            case 'B':
-                transforms.push_back(glm::translate(glm::mat4(1.0f), this->state.position));
-                this->builder_map['B']->build_leaf();
-                this->state.position = current.position + this->movement_step * current.direction;
-                current = this->state;
-                meshes.push_back(this->builder_map['B']->getResult());
-                break;
-            case 'b':
-                transforms.push_back(glm::translate(glm::mat4(1.0f), this->state.position));
-                this->builder_map['b']->build_leaf();
-                this->state.position = current.position + this->movement_step * current.direction;
-                current = this->state;
-                meshes.push_back(this->builder_map['b']->getResult());
-                break;
-            case 'F':
-                transforms.push_back(glm::rotate(glm::translate(glm::mat4(1.0f), current.position), current.rotation, glm::vec3(0.0f, 0.0f, 0.1f)));
-                this->builder_map['F']->build_branch(this->length, this->radius, this->radius * radius_decay);
-                this->state.position = current.position + this->movement_step * current.direction;
-                current = this->state;
-                this->radius *= this->radius_decay;
-                //this->length *= this->length_decay;
+            case 'P': {
+                translation = glm::translate(glm::mat4(1.0f), current.position);
+                rotation = glm::mat4_cast(current.orientation);
+                transforms.push_back(translation * rotation);
+                this->builder_map['P']->build_branch(2 * this->length, this->radius, 0);
                 meshes.push_back(this->builder_map['F']->getResult());
                 break;
-            case '+':
-                rot = glm::rotate(glm::mat4(1.0f), this->angle, glm::vec3(0.0f, 0.0f, 1.0f));
-                this->state.direction = glm::normalize(glm::vec3(rot * glm::vec4(current.direction, 1.0f)));
-                this->state.rotation += this->angle;
+            }
+            case 'F': {
+                translation = glm::translate(glm::mat4(1.0f), current.position);
+                rotation = glm::mat4_cast(current.orientation);
+                transforms.push_back(translation * rotation);
+                this->builder_map['F']->build_branch(this->length, this->radius, this->radius);
+                glm::vec3 movement_direction = glm::normalize(glm::vec3(current.forward.x, current.forward.y, current.forward.z));
+                this->state.position = current.position + this->movement_step * movement_direction;
+                current = this->state;
+                meshes.push_back(this->builder_map['F']->getResult());
+                break;
+            }
+            case 'L': {
+                translation = glm::translate(glm::mat4(1.0f), current.position);
+                rotation = glm::mat4_cast(current.orientation);
+                transforms.push_back(translation * rotation);
+                this->builder_map['L']->build_leaf();
+                meshes.push_back(this->builder_map['L']->getResult());
+                break;
+            }
+            case '+': {
+                // Esegui la rotazione e salvala
+                rot = glm::angleAxis(this->angle, current.up);
+                this->state.orientation = rot * current.orientation;
+                // Ruota il sistema di riferimento locale
+                glm::quat up = glm::quat(0.0f, current.up);
+                glm::quat right = glm::quat(0.0f, current.right);
+                glm::quat forward = glm::quat(0.0f, current.forward);
+                glm::quat rotated_fwd = rot * forward * glm::conjugate(rot);
+                glm::quat rotated_up = rot * up * glm::conjugate(rot);
+                glm::quat rotated_right = rot * right * glm::conjugate(rot);
+                this->state.up = glm::normalize(glm::vec3(rotated_up.x, rotated_up.y, rotated_up.z));
+                this->state.forward = glm::normalize(glm::vec3(rotated_fwd.x, rotated_fwd.y, rotated_fwd.z));
+                this->state.right = glm::normalize(glm::vec3(rotated_right.x, rotated_right.y, rotated_right.z));
                 current = this->state;
                 break;
-            case '-':
-                rot = glm::rotate(glm::mat4(1.0f), -this->angle, glm::vec3(0.0f, 0.0f, 1.0f));
-                this->state.direction = glm::normalize(glm::vec3(rot * glm::vec4(current.direction, 1.0f)));
-                this->state.rotation -= this->angle;
+            }
+            case '-': {
+                rot = glm::angleAxis(-this->angle, current.up);
+                this->state.orientation = rot * current.orientation;
+                // Ruota il sistema di riferimento locale
+                glm::quat up = glm::quat(0.0f, current.up);
+                glm::quat right = glm::quat(0.0f, current.right);
+                glm::quat forward = glm::quat(0.0f, current.forward);
+                glm::quat rotated_fwd = rot * forward * glm::conjugate(rot);
+                glm::quat rotated_up = rot * up * glm::conjugate(rot);
+                glm::quat rotated_right = rot * right * glm::conjugate(rot);
+                this->state.up = glm::normalize(glm::vec3(rotated_up.x, rotated_up.y, rotated_up.z));
+                this->state.forward = glm::normalize(glm::vec3(rotated_fwd.x, rotated_fwd.y, rotated_fwd.z));
+                this->state.right = glm::normalize(glm::vec3(rotated_right.x, rotated_right.y, rotated_right.z));
                 current = this->state;
                 break;
-            case '[':
+            }
+            case '&': {
+                rot = glm::angleAxis(this->angle, current.right);
+                this->state.orientation = rot * current.orientation;
+                glm::quat up = glm::quat(0.0f, current.up);
+                glm::quat right = glm::quat(0.0f, current.right);
+                glm::quat forward = glm::quat(0.0f, current.forward);
+                glm::quat rotated_fwd = rot * forward * glm::conjugate(rot);
+                glm::quat rotated_up = rot * up * glm::conjugate(rot);
+                glm::quat rotated_right = rot * right * glm::conjugate(rot);
+                this->state.up = glm::normalize(glm::vec3(rotated_up.x, rotated_up.y, rotated_up.z));
+                this->state.forward = glm::normalize(glm::vec3(rotated_fwd.x, rotated_fwd.y, rotated_fwd.z));
+                this->state.right = glm::normalize(glm::vec3(rotated_right.x, rotated_right.y, rotated_right.z));
+                current = this->state;
+                break;
+            }
+            case '^': {
+                rot = glm::angleAxis(-this->angle, current.right);
+                this->state.orientation = rot * current.orientation;
+                glm::quat up = glm::quat(0.0f, current.up);
+                glm::quat right = glm::quat(0.0f, current.right);
+                glm::quat forward = glm::quat(0.0f, current.forward);
+                glm::quat rotated_fwd = rot * forward * glm::conjugate(rot);
+                glm::quat rotated_up = rot * up * glm::conjugate(rot);
+                glm::quat rotated_right = rot * right * glm::conjugate(rot);
+                this->state.up = glm::normalize(glm::vec3(rotated_up.x, rotated_up.y, rotated_up.z));
+                this->state.forward = glm::normalize(glm::vec3(rotated_fwd.x, rotated_fwd.y, rotated_fwd.z));
+                this->state.right = glm::normalize(glm::vec3(rotated_right.x, rotated_right.y, rotated_right.z));
+                current = this->state;
+                break;
+            }
+            case '/': {
+                rot = glm::angleAxis(this->angle, current.forward);
+                this->state.orientation = rot * current.orientation;
+                glm::quat up = glm::quat(0.0f, current.up);
+                glm::quat right = glm::quat(0.0f, current.right);
+                glm::quat forward = glm::quat(0.0f, current.forward);
+                glm::quat rotated_fwd = rot * forward * glm::conjugate(rot);
+                glm::quat rotated_up = rot * up * glm::conjugate(rot);
+                glm::quat rotated_right = rot * right * glm::conjugate(rot);
+                this->state.up = glm::normalize(glm::vec3(rotated_up.x, rotated_up.y, rotated_up.z));
+                this->state.forward = glm::normalize(glm::vec3(rotated_fwd.x, rotated_fwd.y, rotated_fwd.z));
+                this->state.right = glm::normalize(glm::vec3(rotated_right.x, rotated_right.y, rotated_right.z));
+                current = this->state;
+                break;
+            }
+            case '\\': {
+                rot = glm::angleAxis(-this->angle, current.forward);
+                this->state.orientation = rot * current.orientation;
+                glm::quat up = glm::quat(0.0f, current.up);
+                glm::quat right = glm::quat(0.0f, current.right);
+                glm::quat forward = glm::quat(0.0f, current.forward);
+                glm::quat rotated_fwd = rot * forward * glm::conjugate(rot);
+                glm::quat rotated_up = rot * up * glm::conjugate(rot);
+                glm::quat rotated_right = rot * right * glm::conjugate(rot);
+                this->state.up = glm::normalize(glm::vec3(rotated_up.x, rotated_up.y, rotated_up.z));
+                this->state.forward = glm::normalize(glm::vec3(rotated_fwd.x, rotated_fwd.y, rotated_fwd.z));
+                this->state.right = glm::normalize(glm::vec3(rotated_right.x, rotated_right.y, rotated_right.z));
+                current = this->state;
+                break;
+            }
+            case '[': {
                 this->state_stack.push(current);
                 break;
-            case ']':
+            }
+            case ']': {
                 this->state = this->state_stack.top();
                 current = this->state;
                 this->state_stack.pop();
                 break;
+            }
             default:
                 break;
 
