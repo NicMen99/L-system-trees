@@ -35,6 +35,10 @@ int main() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+#ifdef __APPLE__
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#endif
+
     GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "ProvaOpenGL", nullptr, nullptr);
     if (window == nullptr) {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -80,7 +84,7 @@ int main() {
     //};
     auto l = Lindenmayer(characters, production_rules);
 
-    auto result = l.generate("P", 2, true);
+    auto result = l.generate("P", 3, true);
 
     std::shared_ptr<Branch> sBranch = std::make_shared<Branch>(6);
     std::shared_ptr<Leaf> sLeaf = std::make_shared<Leaf>();
