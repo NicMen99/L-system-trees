@@ -1,7 +1,11 @@
 #version 460
 
+in vec2 tCoords;
+
 out vec4 color;
 
+uniform sampler2D bark_diffuse;
+
 void main() {
-    color = vec4(0.6f, 0.3f, 0.0f, 1.0f);
+    color = texture(bark_diffuse, tCoords);
 }

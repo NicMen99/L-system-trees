@@ -29,7 +29,7 @@ bool firstMouse = true;
 // Camera
 Camera camera(glm::vec3(0.0f, 0.0f, -5.0f));
 
-int main() {
+int main(int argc, char** argv) {
     glfwInit(); //Initialization of GLFW
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -120,7 +120,7 @@ int main() {
         // Stuff
         for (int i = 0; i < meshes.size(); i++) {
             shader.setMat4("model", transforms[i]);
-            meshes[i].render();
+            meshes[i].render(shader);
         }
 
         // events and swap buffers

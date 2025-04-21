@@ -24,7 +24,7 @@ void Leaf::build_leaf() {
     vertices.push_back(Vertex{v4});
     vertices.push_back(Vertex{v1});
 
-    this->mesh = Mesh(vertices, std::vector<unsigned int>{});
+    this->mesh = Mesh(vertices, std::vector<unsigned int>{}, std::vector<Texture>{});
 }
 
 Mesh Leaf::getResult() {

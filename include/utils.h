@@ -7,7 +7,9 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include "../lib/stb_image.h"
 #include <fstream>
+#include <iostream>
 #include <cassert>
 
 void error_callback(int error, const char* description);
@@ -25,5 +27,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 
 void scroll_callback(GLFWwindow * window, double xoffset, double yoffset);
 
+unsigned int loadTexture(char const * path);
 
 #endif //UTILS_H

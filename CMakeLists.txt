@@ -4,8 +4,6 @@ project(L-system-trees)
 set(CMAKE_CXX_STANDARD 20)
 
 add_subdirectory(lib/glfw-3.4)
-include_directories( SYSTEM lib/glad/include
-                    include)
 
 find_package(OpenGL REQUIRED)
 find_package(glm REQUIRED)
@@ -30,9 +28,16 @@ add_executable(${PROJECT_NAME}
         include/shader.h
         src/leaf_builder.cpp
         include/leaf_builder.h
+        shaders/fshader.glsl
+        shaders/vshader.glsl
+        src/path_manager.cpp
+        include/path_manager.h
 )
 
-target_include_directories(${PROJECT_NAME} PRIVATE lib/glfw-3.4/include)
+target_include_directories(${PROJECT_NAME}
+        PRIVATE lib/glfw-3.4/include
+        lib/glad/include
+        include)
 
 target_link_libraries(${PROJECT_NAME} glfw)
 target_link_libraries(${PROJECT_NAME} OpenGL::GL)
