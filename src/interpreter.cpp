@@ -32,7 +32,7 @@ void Interpreter::read_string(const std::string &predicate, std::vector<Mesh>& m
                 translation = glm::translate(glm::mat4(1.0f), current.position);
                 rotation = glm::mat4_cast(current.orientation);
                 transforms.push_back(translation * rotation);
-                this->builder_map['P']->build_branch(2 * this->length, this->radius, 0);
+                this->builder_map['P']->build_branch(0.5f * this->length, this->radius, 0);
                 meshes.push_back(this->builder_map['F']->getResult());
                 break;
             }

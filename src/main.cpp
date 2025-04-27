@@ -34,6 +34,7 @@ int main(int argc, char** argv) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    stbi_set_flip_vertically_on_load(true);
 
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -66,6 +67,8 @@ int main(int argc, char** argv) {
 
     // Setting depth test
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     //glEnable(GL_CULL_FACE);
     //glFrontFace(GL_CCW);
 
@@ -73,7 +76,7 @@ int main(int argc, char** argv) {
 
     std::set<char> characters = {'P', 'F', 'L', '+', '-', '&', '^', '/', '\\', '[', ']', 'X'};
     std::map<char, std::string> production_rules ={
-        {'P', "[&FP]/////[&FP]///////[&FP]" },
+        {'P', "[&F[&&L]P]/////’[&F[&&L]P]///////’[&F[&&L]P]" },
         {'F', "X/////F"},
         {'X', "F"}
     };
@@ -84,7 +87,7 @@ int main(int argc, char** argv) {
     //};
     auto l = Lindenmayer(characters, production_rules);
 
-    auto result = l.generate("P", 3, true);
+    auto result = l.generate("P", 5, true);
 
     std::shared_ptr<Branch> sBranch = std::make_shared<Branch>(6);
     std::shared_ptr<Leaf> sLeaf = std::make_shared<Leaf>();

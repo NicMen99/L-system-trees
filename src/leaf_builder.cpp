@@ -4,8 +4,10 @@
 
 #include "leaf_builder.h"
 
-Leaf::Leaf(float size) {
-    this->size = size;
+#include "utils.h"
+
+Leaf::Leaf(float size) : size(size){
+    this->tID = loadTexture("textures/Leaves.png");
 }
 
 void Leaf::build_leaf() {
@@ -16,15 +18,18 @@ void Leaf::build_leaf() {
     glm::vec3 v3 = glm::vec3(-this->size/2, this->size/2, 0.0f);
     glm::vec3 v4 = glm::vec3(0.0f, this->size, 0.0f);
 
-    vertices.push_back(Vertex{v2});
-    vertices.push_back(Vertex{v1});
-    vertices.push_back(Vertex{v4});
+    vertices.push_back(Vertex{.position=v2, .normal=glm::vec3(0.0f, 0.0f, 1.0f), .tex_coords = glm::vec2(0.5f, 0.0f)});
+    vertices.push_back(Vertex{.position=v1, .normal=glm::vec3(0.0f, 0.0f, 1.0f), .tex_coords = glm::vec2(0.06f, 0.5f)});
+    vertices.push_back(Vertex{.position=v4, .normal=glm::vec3(0.0f, 0.0f, 1.0f), .tex_coords = glm::vec2(0.95f, 0.5f)});
 
-    vertices.push_back(Vertex{v3});
-    vertices.push_back(Vertex{v4});
-    vertices.push_back(Vertex{v1});
+    vertices.push_back(Vertex{.position=v3, .normal=glm::vec3(0.0f, 0.0f, 1.0f), .tex_coords = glm::vec2(0.5f, 1.0f)});
+    vertices.push_back(Vertex{.position=v4, .normal=glm::vec3(0.0f, 0.0f, 1.0f), .tex_coords = glm::vec2(0.95f, 0.5f)});
+    vertices.push_back(Vertex{.position=v1, .normal=glm::vec3(0.0f, 0.0f, 1.0f), .tex_coords = glm::vec2(0.06f, 0.5f)});
 
-    this->mesh = Mesh(vertices, std::vector<unsigned int>{}, std::vector<Texture>{});
+    std::vector<Texture> textures;
+    textures.push_back(Texture{.id = this->tID, .type = ""});
+
+    this->mesh = Mesh(vertices, std::vector<unsigned int>{}, textures);
 }
 
 Mesh Leaf::getResult() {

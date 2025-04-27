@@ -10,7 +10,7 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
 
 void Mesh::render(Shader &shader) {
     glActiveTexture(GL_TEXTURE0);
-    shader.setInt("bark_diffuse", 0);
+    shader.setInt("diffuse", 0);
     glBindTexture(GL_TEXTURE_2D, textures[0].id);
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, vertices.size());

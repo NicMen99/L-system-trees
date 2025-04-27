@@ -19,6 +19,6 @@ private:
     Mesh mesh;
     unsigned int resolution;
     unsigned int tID;
-    const glm::vec4 color = glm::vec4(0.6f, 0.3f, 0, 1);
+    //const glm::vec4 color = glm::vec4(0.6f, 0.3f, 0, 1);
 };
 #endif //BRANCH_BUILDER_H
