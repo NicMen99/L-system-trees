@@ -75,10 +75,10 @@ int main(int argc, char** argv) {
     Shader shader = Shader("shaders/vshader.glsl", "shaders/fshader.glsl");
 
     std::set<char> characters = {'P', 'F', 'L', '+', '-', '&', '^', '/', '\\', '[', ']', 'X'};
-    std::map<char, std::string> production_rules ={
-        {'P', "[&F[&&L]P]/////’[&F[&&L]P]///////’[&F[&&L]P]" },
-        {'F', "X/////F"},
-        {'X', "F"}
+    std::map<char, std::vector<std::string>> production_rules ={
+        {'P', std::vector<std::string> {"[&F[&&L]P]/////’[&F[&&L]P]///////’[&F[&&L]P]"}},
+        {'F', std::vector<std::string> {"X/////F", "F"}},
+        {'X', std::vector<std::string> {"F"}}
     };
 
     //std::map<char, std::string> production_rules = {

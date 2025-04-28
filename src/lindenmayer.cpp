@@ -3,13 +3,18 @@
 //
 
 #include "lindenmayer.h"
+#include <iterator>
+#include <algorithm>
+#include <random>
 
 std::string Lindenmayer::iterate(const std::string &current_string) {
     std::string next_string = "";
     for (char c : current_string) {
         auto it = production_rules.find(c);
         if (it != production_rules.end()) {
-            next_string += it->second;
+            std::vector<std::string> extracted{};
+            std::sample(it->second.begin(), it->second.end(), std::back_inserter(extracted), 1, std::mt19937 {std::random_device{}()});
+            next_string += extracted[0];
         }
         else {
             // Produzione identità
