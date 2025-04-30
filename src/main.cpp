@@ -27,7 +27,7 @@ float lastx = 640, lasty = 360;
 bool firstMouse = true;
 
 // Camera
-Camera camera(glm::vec3(0.0f, 0.0f, -5.0f));
+Camera camera(glm::vec3(0.0f, 2.0f, 15.0f));
 
 int main(int argc, char** argv) {
     glfwInit(); //Initialization of GLFW
@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "ProvaOpenGL", nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "L-system trees", nullptr, nullptr);
     if (window == nullptr) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glEnable(GL_CULL_FACE);
+    glEnable(GL_CULL_FACE);
     //glFrontFace(GL_CCW);
 
     Shader shader = Shader("shaders/vshader.glsl", "shaders/fshader.glsl");
@@ -81,6 +81,27 @@ int main(int argc, char** argv) {
         {'X', std::vector<std::string> {"F"}}
     };
 
+    //std::map<char, std::vector<std::string>> production_rules ={
+    //    {'F', {"F[+B][-B]F",
+    //       "F[+B]F",
+    //       "F[-B]F",
+    //       "FF",
+    //       "F[W]",
+    //       "F[+L]",    // Possibilità di generare direttamente una foglia
+    //       "F[-L]",
+    //       "F+", "F-",
+    //       "F&", "F^",
+    //       "F\\", "F/"}},
+    //{'L', {"L"}},
+    //{'P', {"P"}},
+    //{'W', {"[&F][-F][^F]", // 'W' crea tre rami
+    //       "[&F][+L]",      // Un ramo con una foglia
+    //       "[-F][-L]",      // Un altro ramo con una foglia
+    //       "[^F][\\L]"}},    // Un terzo ramo con una foglia (con rotazione aggiuntiva)
+    //{'B', {"&F"}},
+    //{'C', {"\\CF"}}
+    //};
+
     //std::map<char, std::string> production_rules = {
     //    {'X', "F[+X]F[-X]+X"},
     //    {'F', "FF"}
@@ -89,7 +110,7 @@ int main(int argc, char** argv) {
 
     auto result = l.generate("P", 5, true);
 
-    std::shared_ptr<Branch> sBranch = std::make_shared<Branch>(6);
+    std::shared_ptr<Branch> sBranch = std::make_shared<Branch>(50);
     std::shared_ptr<Leaf> sLeaf = std::make_shared<Leaf>();
     Interpreter turtle = Interpreter(sBranch, sLeaf, 22.5f);
     std::vector<Mesh> meshes;
@@ -114,6 +135,10 @@ int main(int argc, char** argv) {
         processInput(window);
 
         shader.use();
+        shader.setVec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+        shader.setVec3("viewPos", camera.position);
+        shader.setVec3("light.ambient", glm::vec3(0.7f, 0.7f, 0.7f));
+        shader.setVec3("light.diffuse", glm::vec3(0.9f, 0.9f, 0.9f));
         // Camera settings
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
