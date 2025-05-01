@@ -36,11 +36,6 @@ glm::vec3 cubePositions[] = {
     glm::vec3(-11.5f, 0.0f, -21.5f),
     glm::vec3(-31.8f, 0.0f, -12.3f),
     glm::vec3( 21.4f, 0.0f, -31.5f),
-    glm::vec3(-11.7f,  0.0f, -17.5f),
-    glm::vec3( 11.3f, 0.0f, -31.5f),
-    glm::vec3( 11.5f,  0.0f, -20.5f),
-    glm::vec3( 11.5f,  0.0f, -11.5f),
-    glm::vec3(-11.3f,  0.0f, -21.5f)
 };
 
 int main(int argc, char** argv) {
@@ -90,8 +85,8 @@ int main(int argc, char** argv) {
 
     std::set<char> characters = {'P', 'F', 'L', '+', '-', '&', '^', '/', '\\', '[', ']', 'X'};
     std::map<char, std::vector<std::string>> production_rules ={
-        {'P', std::vector<std::string> {"[&F[&&L]P]/////[&F[&&L]P]///////[&F[&&L]P]", "[&F[&&L]P]/////////[&F[&&L]P]"}},
-        {'F', std::vector<std::string> {"X/////F", "FPF", "FF", "F", "FFP"}},
+        {'P', std::vector<std::string> {"[&F[&&L]P[]F]/////[&F[&&L]P]///////[&F[&&L]P]", "[&F[&&L]P]/////////[&F[&&L]P]"}},
+        {'F', std::vector<std::string> {"X/////F", "XPF", "FF", "F", "FXP"}},
         {'X', std::vector<std::string> {"F"}}
     };
 
@@ -112,7 +107,7 @@ int main(int argc, char** argv) {
         std::vector<Mesh> meshes {};
         std::vector<glm::mat4> transforms {};
 
-        auto result = l.generate("F", 5, true);
+        auto result = l.generate("F", 7, true);
         turtle.read_string(result, meshes, transforms);
         forest.emplace_back(meshes, transforms);
     }

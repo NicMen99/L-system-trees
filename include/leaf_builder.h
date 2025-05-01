@@ -16,9 +16,7 @@ public:
     Mesh getResult() override;
 private:
     Mesh mesh;
-    float size;
     unsigned int tID;
-    //glm::vec4 color = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
 };
 
 

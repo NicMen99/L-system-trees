@@ -15,7 +15,7 @@
 class Tree {
 public:
     Tree(const std::vector<Mesh> &meshes, const std::vector<glm::mat4> &transf);
-    void render(Shader &shader);
+    void render(Shader &shader, const glm::mat4 &model = glm::mat4(1.0f));
 private:
     std::vector<glm::mat4> transforms;
     std::vector<Mesh> meshes;
