@@ -14,6 +14,7 @@
 #include "interpreter.h"
 #include "lindenmayer.h"
 #include "shader.h"
+#include "tree.h"
 
 #define SCREEN_WIDTH 1280
 #define SCREEN_HEIGHT 720
@@ -28,6 +29,19 @@ bool firstMouse = true;
 
 // Camera
 Camera camera(glm::vec3(0.0f, 2.0f, 15.0f));
+
+glm::vec3 cubePositions[] = {
+    glm::vec3( 0.0f,  0.0f,  0.0f),
+    glm::vec3( 12.0f,  0.0f, -15.0f),
+    glm::vec3(-11.5f, 0.0f, -21.5f),
+    glm::vec3(-31.8f, 0.0f, -12.3f),
+    glm::vec3( 21.4f, 0.0f, -31.5f),
+    glm::vec3(-11.7f,  0.0f, -17.5f),
+    glm::vec3( 11.3f, 0.0f, -31.5f),
+    glm::vec3( 11.5f,  0.0f, -20.5f),
+    glm::vec3( 11.5f,  0.0f, -11.5f),
+    glm::vec3(-11.3f,  0.0f, -21.5f)
+};
 
 int main(int argc, char** argv) {
     glfwInit(); //Initialization of GLFW
@@ -76,31 +90,10 @@ int main(int argc, char** argv) {
 
     std::set<char> characters = {'P', 'F', 'L', '+', '-', '&', '^', '/', '\\', '[', ']', 'X'};
     std::map<char, std::vector<std::string>> production_rules ={
-        {'P', std::vector<std::string> {"[&F[&&L]P]/////’[&F[&&L]P]///////’[&F[&&L]P]"}},
-        {'F', std::vector<std::string> {"X/////F", "F"}},
+        {'P', std::vector<std::string> {"[&F[&&L]P]/////[&F[&&L]P]///////[&F[&&L]P]", "[&F[&&L]P]/////////[&F[&&L]P]"}},
+        {'F', std::vector<std::string> {"X/////F", "FPF", "FF", "F", "FFP"}},
         {'X', std::vector<std::string> {"F"}}
     };
-
-    //std::map<char, std::vector<std::string>> production_rules ={
-    //    {'F', {"F[+B][-B]F",
-    //       "F[+B]F",
-    //       "F[-B]F",
-    //       "FF",
-    //       "F[W]",
-    //       "F[+L]",    // Possibilità di generare direttamente una foglia
-    //       "F[-L]",
-    //       "F+", "F-",
-    //       "F&", "F^",
-    //       "F\\", "F/"}},
-    //{'L', {"L"}},
-    //{'P', {"P"}},
-    //{'W', {"[&F][-F][^F]", // 'W' crea tre rami
-    //       "[&F][+L]",      // Un ramo con una foglia
-    //       "[-F][-L]",      // Un altro ramo con una foglia
-    //       "[^F][\\L]"}},    // Un terzo ramo con una foglia (con rotazione aggiuntiva)
-    //{'B', {"&F"}},
-    //{'C', {"\\CF"}}
-    //};
 
     //std::map<char, std::string> production_rules = {
     //    {'X', "F[+X]F[-X]+X"},
@@ -108,14 +101,21 @@ int main(int argc, char** argv) {
     //};
     auto l = Lindenmayer(characters, production_rules);
 
-    auto result = l.generate("P", 5, true);
+    std::vector<Tree> forest {};
 
     std::shared_ptr<Branch> sBranch = std::make_shared<Branch>(50);
     std::shared_ptr<Leaf> sLeaf = std::make_shared<Leaf>();
     Interpreter turtle = Interpreter(sBranch, sLeaf, 22.5f);
-    std::vector<Mesh> meshes;
-    std::vector<glm::mat4> transforms;
-    turtle.read_string(result, meshes, transforms);
+
+    for (glm::vec3 position : cubePositions) {
+        turtle.reset_interpreter(position);
+        std::vector<Mesh> meshes {};
+        std::vector<glm::mat4> transforms {};
+
+        auto result = l.generate("F", 5, true);
+        turtle.read_string(result, meshes, transforms);
+        forest.emplace_back(meshes, transforms);
+    }
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
@@ -146,9 +146,8 @@ int main(int argc, char** argv) {
         shader.setMat4("projection", projection);
 
         // Stuff
-        for (int i = 0; i < meshes.size(); i++) {
-            shader.setMat4("model", transforms[i]);
-            meshes[i].render(shader);
+        for (Tree tree: forest) {
+            tree.render(shader);
         }
 
         // events and swap buffers

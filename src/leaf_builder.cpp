@@ -6,17 +6,17 @@
 
 #include "utils.h"
 
-Leaf::Leaf(float size) : size(size){
+Leaf::Leaf(){
     this->tID = loadTexture("textures/Leaves.png");
 }
 
-void Leaf::build_leaf() {
+void Leaf::build_leaf(float size) {
     std::vector<Vertex> vertices;
 
-    glm::vec3 v1 = glm::vec3(-this->size/2, 0.0f, 0.0f);
-    glm::vec3 v2 = glm::vec3(this->size/2, 0.0f, 0.0f);
-    glm::vec3 v3 = glm::vec3(-this->size/2, this->size, 0.0f);
-    glm::vec3 v4 = glm::vec3(this->size/2, this->size, 0.0f);
+    glm::vec3 v1 = glm::vec3(-size/2, 0.0f, 0.0f);
+    glm::vec3 v2 = glm::vec3(size/2, 0.0f, 0.0f);
+    glm::vec3 v3 = glm::vec3(-size/2, size, 0.0f);
+    glm::vec3 v4 = glm::vec3(size/2, size, 0.0f);
 
     vertices.push_back(Vertex{.position=v1, .normal=glm::vec3(0.0f, 0.0f, -1.0f), .tex_coords = glm::vec2(0.0f, 0.06f)});
     vertices.push_back(Vertex{.position=v3, .normal=glm::vec3(0.0f, 0.0f, -1.0f), .tex_coords = glm::vec2(0.0f, 1.0f)});

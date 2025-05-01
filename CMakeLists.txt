@@ -32,6 +32,8 @@ add_executable(${PROJECT_NAME}
         shaders/vshader.glsl
         src/path_manager.cpp
         include/path_manager.h
+        src/tree.cpp
+        include/tree.h
 )
 
 target_include_directories(${PROJECT_NAME}
