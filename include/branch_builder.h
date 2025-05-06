@@ -4,6 +4,7 @@
 
 #ifndef BRANCH_BUILDER_H
 #define BRANCH_BUILDER_H
+#include <memory>
 #include <glm/vec4.hpp>
 
 #include "abstract_builder.h"
@@ -13,10 +14,10 @@ public:
     Branch(unsigned int resolution = 8);
     ~Branch() override = default;
     void build_branch(float height, float R, float r) override;
-    Mesh getResult() override;
+    std::shared_ptr<Mesh> getResult() override;
 
 private:
-    Mesh mesh;
+    std::shared_ptr<Mesh> mesh;
     unsigned int resolution;
     unsigned int tID;
     //const glm::vec4 color = glm::vec4(0.6f, 0.3f, 0, 1);

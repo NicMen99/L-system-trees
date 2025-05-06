@@ -5,6 +5,7 @@
 #ifndef LEAF_BUILDER_H
 #define LEAF_BUILDER_H
 
+#include <memory>
 #include <glm/vec4.hpp>
 #include "abstract_builder.h"
 
@@ -13,9 +14,9 @@ public:
     Leaf();
     ~Leaf() = default;
     void build_leaf(float size) override;
-    Mesh getResult() override;
+    std::shared_ptr<Mesh> getResult() override;
 private:
-    Mesh mesh;
+    std::shared_ptr<Mesh> mesh;
     unsigned int tID;
 };
 

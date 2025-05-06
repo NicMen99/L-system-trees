@@ -37,9 +37,9 @@ void Leaf::build_leaf(float size) {
     std::vector<Texture> textures;
     textures.push_back(Texture{.id = this->tID, .type = ""});
 
-    this->mesh = Mesh(vertices, std::vector<unsigned int>{}, textures);
+    this->mesh = std::make_shared<Mesh>(vertices, std::vector<unsigned int>{}, textures);
 }
 
-Mesh Leaf::getResult() {
+std::shared_ptr<Mesh> Leaf::getResult() {
     return this->mesh;
 }

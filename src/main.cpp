@@ -83,12 +83,24 @@ int main(int argc, char** argv) {
 
     Shader shader = Shader("shaders/vshader.glsl", "shaders/fshader.glsl");
 
-    std::set<char> characters = {'P', 'F', 'L', '+', '-', '&', '^', '/', '\\', '[', ']', 'X'};
+    std::set<char> characters = {'P', 'F', 'L', '+', '-', '&', '^', '/', ')', '[', ']', 'X'};
+    //std::map<char, std::vector<std::string>> production_rules ={
+    //    {'P', std::vector<std::string> {"[&F[&&L]P[]F]/////[&F[&&L]P]///////[&F[&&L]P]", "[&F[&&L]P]/////////[&F[&&L]P]"}},
+    //    {'F', std::vector<std::string> {"X/////%F", "XP%F", "F%F", "F", "FX%P"}},
+    //    {'X', std::vector<std::string> {"F"}}
+    //};
+
     std::map<char, std::vector<std::string>> production_rules ={
-        {'P', std::vector<std::string> {"[&F[&&L]P[]F]/////[&F[&&L]P]///////[&F[&&L]P]", "[&F[&&L]P]/////////[&F[&&L]P]"}},
-        {'F', std::vector<std::string> {"X/////F", "XPF", "FF", "F", "FXP"}},
-        {'X', std::vector<std::string> {"F"}}
-    };
+            {'F', std::vector<std::string> {"F[&%%%%%!!!!!F]F"}},
+            {'X', std::vector<std::string> {"F"}}
+        };
+
+    //std::map<char, std::vector<std::string>> production_rules ={
+    //    {'A', std::vector<std::string> {"FA", "FFA", "F[/////////&&&B][((((((((((&&&B]A", "FF", "F[/////&&&B][((((((((((((((&&&B]A", "F[/////////////&&&B]A", "F[//&&&B]A", "F[///////////////&&&B][////////////&&&B][//////&&&B]A"}},
+    //    {'B', std::vector<std::string> {"!&FB", "!&FFB", "!&F", "!^FB", "!^FFB", "!^F", "!&X", "!^X"}},
+    //    {'C', std::vector<std::string> {"&&&F"}},
+    //    {'X', std::vector<std::string> {"F", "B"}}
+    //};
 
     //std::map<char, std::string> production_rules = {
     //    {'X', "F[+X]F[-X]+X"},
@@ -98,18 +110,32 @@ int main(int argc, char** argv) {
 
     std::vector<Tree> forest {};
 
-    std::shared_ptr<Branch> sBranch = std::make_shared<Branch>(50);
-    std::shared_ptr<Leaf> sLeaf = std::make_shared<Leaf>();
-    Interpreter turtle = Interpreter(sBranch, sLeaf, 22.5f);
+    // Define tree construction variables
+    float branch_length = 1.0f;
+    float branch_radius = 0.1f;
+    float leaf_size = 2.0f;
+
+    std::unique_ptr<Branch> sBranch = std::make_unique<Branch>(20);
+    std::unique_ptr<Leaf> sLeaf = std::make_unique<Leaf>();
+    sBranch->build_branch(branch_length, branch_radius, branch_radius);
+    sLeaf->build_leaf(leaf_size);
+
+    std::shared_ptr<Mesh> branch_ptr = sBranch->getResult();
+    std::shared_ptr<Mesh> leaf_ptr = sLeaf->getResult();
+
+    sBranch->build_branch(0.5f * branch_length, branch_radius, branch_radius);
+    std::shared_ptr<Mesh> end_ptr = sBranch->getResult();
+
+    Interpreter turtle = Interpreter(22.5f, glm::vec3(0.0f), branch_radius, branch_length);
 
     for (glm::vec3 position : cubePositions) {
         turtle.reset_interpreter(position);
-        std::vector<Mesh> meshes {};
+        std::vector<char> models {};
         std::vector<glm::mat4> transforms {};
 
-        auto result = l.generate("F", 7, true);
-        turtle.read_string(result, meshes, transforms);
-        forest.emplace_back(meshes, transforms);
+        auto result = l.generate("F", 4, true);
+        turtle.read_string(result, models, transforms);
+        forest.emplace_back(transforms, models, branch_ptr, leaf_ptr, end_ptr);
     }
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -136,7 +162,7 @@ int main(int argc, char** argv) {
         shader.setVec3("light.diffuse", glm::vec3(0.9f, 0.9f, 0.9f));
         // Camera settings
         glm::mat4 view = camera.GetViewMatrix();
-        glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 300.0f);
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
 

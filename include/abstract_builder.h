@@ -13,7 +13,7 @@ public:
     virtual void build_leaf(float size) {}
 
     virtual ~Drawer() = default;
-    virtual Mesh getResult() {return Mesh();}
+    virtual std::shared_ptr<Mesh> getResult() {return std::make_shared<Mesh>();}
 };
 
 #endif //DRAWER_H

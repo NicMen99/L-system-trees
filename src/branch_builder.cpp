@@ -52,9 +52,9 @@ void Branch::build_branch(float height, float R, float r) {
     std::vector<Texture> textures;
     textures.push_back(Texture{.id = this->tID, .type = ""});
 
-    this->mesh = Mesh(vertices, std::vector<unsigned int>{}, textures);
+    this->mesh = make_shared<Mesh>(vertices, std::vector<unsigned int>{}, textures);
 }
 
-Mesh Branch::getResult() {
+std::shared_ptr<Mesh> Branch::getResult() {
     return this->mesh;
 }
