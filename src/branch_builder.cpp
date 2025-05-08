@@ -16,6 +16,8 @@ Branch::Branch(unsigned int resolution): resolution(resolution) {
 
 void Branch::build_branch(float height, float R, float r) {
     std::vector<Vertex> vertices;
+    std::vector<unsigned int> indices;
+    unsigned int startIndex;
 
     double increment = glm::radians(360.0f/(float)this->resolution);
 
@@ -29,30 +31,60 @@ void Branch::build_branch(float height, float R, float r) {
 
         glm::vec3 face_vectorA(v3 - v1), face_vectorB(v2 - v1);
         glm::vec3 face_normal(glm::normalize(glm::cross(face_vectorA, face_vectorB)));
-        glm::vec3 base_vectorA(v1 - glm::vec3(0.0)), base_vectorB(v2 - glm::vec3(0.0));
-        glm::vec3 base_normal_down(glm::normalize(glm::cross(base_vectorA, base_vectorB))), base_normal_up(-base_normal_down);
 
+         startIndex = static_cast<unsigned int>(vertices.size());
+
+        // Posizionamento dei vertici delle facce laterali
         vertices.push_back(Vertex{.position=v1, .normal=face_normal, .tex_coords=glm::vec2(i * texture_sector, 0)});
-        vertices.push_back(Vertex{.position=v3, .normal=face_normal, .tex_coords=glm::vec2(i * texture_sector, 1)});
         vertices.push_back(Vertex{.position=v2, .normal=face_normal, .tex_coords=glm::vec2((i+1) * texture_sector, 0)});
 
         vertices.push_back(Vertex{.position=v3, .normal=face_normal, .tex_coords=glm::vec2(i * texture_sector, 1)});
         vertices.push_back(Vertex{.position=v4, .normal=face_normal, .tex_coords=glm::vec2((i+1) * texture_sector, 1)});
-        vertices.push_back(Vertex{.position=v2, .normal=face_normal, .tex_coords=glm::vec2((i+1) * texture_sector, 0)});
 
-        vertices.push_back(Vertex{.position=glm::vec3(0, 0, 0), .normal=base_normal_down, .tex_coords=glm::vec2(0, 0)});
-        vertices.push_back(Vertex{.position=v1, .normal=base_normal_down, .tex_coords=glm::vec2(0, 0)});
-        vertices.push_back(Vertex{.position=v2, .normal=base_normal_down, .tex_coords=glm::vec2(0, 0)});
+        indices.push_back(startIndex);
+        indices.push_back(startIndex + 2);
+        indices.push_back(startIndex + 1);
 
-        vertices.push_back(Vertex{.position=glm::vec3(0, height, 0), .normal=base_normal_up, .tex_coords=glm::vec2(0, 0)});
-        vertices.push_back(Vertex{.position=v4, .normal=base_normal_up, .tex_coords=glm::vec2(0, 0)});
-        vertices.push_back(Vertex{.position=v3, .normal=base_normal_up, .tex_coords=glm::vec2(0, 0)});
+        indices.push_back(startIndex + 2);
+        indices.push_back(startIndex + 3);
+        indices.push_back(startIndex + 1);
+    }
+
+    // Posizionamento dei vertici della base inferiore
+
+    startIndex = static_cast<unsigned int>(vertices.size());
+    vertices.push_back(Vertex{.position=glm::vec3(0, 0, 0), .normal=glm::vec3(0.0f, -1.0f, 0.0f), .tex_coords=glm::vec2(0, 0)});
+    unsigned int baseIndex = static_cast<unsigned int>(vertices.size());
+
+    for (int i = 0; i < this->resolution; i++) {
+        glm::vec3 v(R * cos(i * increment), 0.0f, R * sin(i * increment));
+        vertices.push_back(Vertex{.position=v, .normal=glm::vec3(0.0f, -1.0f, 0.0f), .tex_coords=glm::vec2(0, 0)});
+    }
+    for (int i = 0; i < this->resolution; i++) {
+        indices.push_back(startIndex);
+        indices.push_back(baseIndex + i);
+        indices.push_back(baseIndex + (i + 1) % this->resolution);
+    }
+
+    // Posizionamento dei vertici della base superiore
+    startIndex = static_cast<unsigned int>(vertices.size());
+    vertices.push_back(Vertex{.position=glm::vec3(0, height, 0), .normal=glm::vec3(0.0f, 1.0f, 0.0f), .tex_coords=glm::vec2(0, 0)});
+    baseIndex = static_cast<unsigned int>(vertices.size());
+
+    for (int i = 0; i < this->resolution; i++) {
+        glm::vec3 v(r * cos(i * increment), height, r * sin(i * increment));
+        vertices.push_back(Vertex{.position=v, .normal=glm::vec3(0.0f, 1.0f, 0.0f), .tex_coords=glm::vec2(0, 0)});
+    }
+    for (int i = 0; i < this->resolution; i++) {
+        indices.push_back(startIndex);
+        indices.push_back(baseIndex + (i + 1) % this->resolution);
+        indices.push_back(baseIndex + i);
     }
 
     std::vector<Texture> textures;
     textures.push_back(Texture{.id = this->tID, .type = ""});
 
-    this->mesh = make_shared<Mesh>(vertices, std::vector<unsigned int>{}, textures);
+    this->mesh = make_shared<Mesh>(vertices, indices, textures);
 }
 
 std::shared_ptr<Mesh> Branch::getResult() {

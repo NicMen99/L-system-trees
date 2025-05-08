@@ -13,7 +13,13 @@ void Mesh::render(Shader &shader) {
     shader.setInt("diffuse", 0);
     glBindTexture(GL_TEXTURE_2D, textures[0].id);
     glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+    if (indices.size() > 0) {
+        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    }
+    else {
+        // Should never enter here
+        glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+    }
     glBindVertexArray(0);
     glActiveTexture(GL_TEXTURE0);
 }
