@@ -12,6 +12,7 @@
 #include "utils.h"
 #include "camera.h"
 #include "interpreter.h"
+#include "junction_builder.h"
 #include "lindenmayer.h"
 #include "shader.h"
 #include "tree.h"
@@ -83,47 +84,61 @@ int main(int argc, char** argv) {
 
     Shader shader = Shader("shaders/vshader.glsl", "shaders/fshader.glsl");
 
-    std::set<char> characters = {'P', 'F', 'L', '+', '-', '&', '^', '/', ')', '[', ']', 'X'};
-    //std::map<char, std::vector<std::string>> production_rules ={
-    //    {'P', std::vector<std::string> {"[&F[&&L]P[]F]/////[&F[&&L]P]///////[&F[&&L]P]", "[&F[&&L]P]/////////[&F[&&L]P]"}},
-    //    {'F', std::vector<std::string> {"X/////%F", "XP%F", "F%F", "F", "FX%P"}},
-    //    {'X', std::vector<std::string> {"F"}}
+    // Standard hill tree
+    //std::map<char, std::map<std::string, float>> production_rules ={
+    //    {'P', std::map<std::string, float> {
+    //          {"[&F[&&L]PF]/////[&F[&&L]P]///////[&F[&&L]P]", 0.5},
+    //          {"[&F[&&L]P]/////////[&F[&&L]P]", 0.5}}},
+    //    {'F', std::map<std::string, float> {
+    //          {"X/////F", 0.2},
+    //          {"XPF", 0.2},
+    //          {"FF", 0.2},
+    //          {"F", 0.2},
+    //          {"FXP", 0.2}}},
+    //    {'X', std::map<std::string, float> {{"F", 1.0}}}
     //};
 
-    std::map<char, std::vector<std::string>> production_rules ={
-            {'F', std::vector<std::string> {"F[&%%%%%!!!!!F]F"}},
-            {'X', std::vector<std::string> {"F"}}
-        };
+    // Cactus
+    std::map<char, std::map<std::string, float>> production_rules = {
+        {'F', std::map<std::string, float> {
+                {"F", 0.05},
+                {"FF", 0.6},
+                {"FJ", 0.1},
+                {"[B]F", 0.027},
+                {"[/B]F", 0.027},
+                {"[///B]F", 0.027},
+                {"[/////B]F", 0.027},
+                {"[///////B]F", 0.027},
+                {"[(B]F", 0.027},
+                {"[(((B]F", 0.027},
+                {"[(((((B]F", 0.027},
+                {"[(((((((B]F", 0.027}}
+        },
+        {'B', std::map<std::string, float> {{"!++++XJ----XF", 1.0}}}
+    };
 
-    //std::map<char, std::vector<std::string>> production_rules ={
-    //    {'A', std::vector<std::string> {"FA", "FFA", "F[/////////&&&B][((((((((((&&&B]A", "FF", "F[/////&&&B][((((((((((((((&&&B]A", "F[/////////////&&&B]A", "F[//&&&B]A", "F[///////////////&&&B][////////////&&&B][//////&&&B]A"}},
-    //    {'B', std::vector<std::string> {"!&FB", "!&FFB", "!&F", "!^FB", "!^FFB", "!^F", "!&X", "!^X"}},
-    //    {'C', std::vector<std::string> {"&&&F"}},
-    //    {'X', std::vector<std::string> {"F", "B"}}
-    //};
-
-    //std::map<char, std::string> production_rules = {
-    //    {'X', "F[+X]F[-X]+X"},
-    //    {'F', "FF"}
-    //};
-    auto l = Lindenmayer(characters, production_rules);
+    auto l = Lindenmayer(production_rules);
 
     std::vector<Tree> forest {};
 
     // Define tree construction variables
     float branch_length = 1.0f;
-    float branch_radius = 0.1f;
+    float branch_radius = 0.2f;
     float leaf_size = 2.0f;
+    int iterations = 5;
 
     std::unique_ptr<Branch> sBranch = std::make_unique<Branch>(20);
     std::unique_ptr<Leaf> sLeaf = std::make_unique<Leaf>();
+    std::unique_ptr<Junction> sJunc = std::make_unique<Junction>(20);
     sBranch->build_branch(branch_length, branch_radius, branch_radius);
     sLeaf->build_leaf(leaf_size);
+    sJunc->build_junciton(branch_radius);
 
     std::shared_ptr<Mesh> branch_ptr = sBranch->getResult();
     std::shared_ptr<Mesh> leaf_ptr = sLeaf->getResult();
+    std::shared_ptr<Mesh> junc_ptr = sJunc->getResult();
 
-    sBranch->build_branch(0.5f * branch_length, branch_radius, branch_radius);
+    sBranch->build_branch(0.5f * branch_length, branch_radius, 0);
     std::shared_ptr<Mesh> end_ptr = sBranch->getResult();
 
     Interpreter turtle = Interpreter(22.5f, glm::vec3(0.0f), branch_radius, branch_length);
@@ -133,9 +148,9 @@ int main(int argc, char** argv) {
         std::vector<char> models {};
         std::vector<glm::mat4> transforms {};
 
-        auto result = l.generate("F", 4, true);
+        auto result = l.generate("XF", iterations, true);
         turtle.read_string(result, models, transforms);
-        forest.emplace_back(transforms, models, branch_ptr, leaf_ptr, end_ptr);
+        forest.emplace_back(transforms, models, branch_ptr, leaf_ptr, end_ptr, junc_ptr);
     }
 
     //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

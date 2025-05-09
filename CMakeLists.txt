@@ -34,6 +34,8 @@ add_executable(${PROJECT_NAME}
         include/path_manager.h
         src/tree.cpp
         include/tree.h
+        src/junction_builder.cpp
+        include/junction_builder.h
 )
 
 target_include_directories(${PROJECT_NAME}

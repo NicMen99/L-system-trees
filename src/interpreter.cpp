@@ -23,22 +23,27 @@ Interpreter::Interpreter(float angle, glm::vec3 position, float radius, float le
 void Interpreter::read_string(const std::string &predicate, std::vector<char>& models, std::vector<glm::mat4>& transforms) {
     TurtleState current = this->state;
     glm::quat rot;
-    glm::mat4 translation, rotation, scale_m = glm::mat4(1.0f);
+    glm::mat4 translation, rotation = glm::mat4(1.0f);
     for (char c : predicate) {
         switch (c) {
             case 'P': {
                 translation = glm::translate(glm::mat4(1.0f), current.position);
                 rotation = glm::mat4_cast(current.orientation);
                 transforms.push_back(translation * rotation * current.scale_matrix);
-                //this->builder_map['P']->build_branch(0.5f * current.step, current.radius, 0);
                 models.push_back('P');
+                break;
+            }
+            case 'J': {
+                translation = glm::translate(glm::mat4(1.0f), current.position);
+                rotation = glm::mat4_cast(current.orientation);
+                transforms.push_back(translation * rotation * glm::scale(current.scale_matrix, glm::vec3(1.0f, current.scale_matrix[0][0], 1.0f)));
+                models.push_back('J');
                 break;
             }
             case 'F': {
                 translation = glm::translate(glm::mat4(1.0f), current.position);
                 rotation = glm::mat4_cast(current.orientation);
                 transforms.push_back(translation * rotation * current.scale_matrix);
-                //this->builder_map['F']->build_branch(current.step, current.radius, current.radius);
                 glm::vec3 movement_direction = glm::normalize(glm::vec3(current.forward.x, current.forward.y, current.forward.z));
                 this->state.position = current.position + current.step * movement_direction;
                 current = this->state;
@@ -49,7 +54,6 @@ void Interpreter::read_string(const std::string &predicate, std::vector<char>& m
                 translation = glm::translate(glm::mat4(1.0f), current.position);
                 rotation = glm::mat4_cast(current.orientation);
                 transforms.push_back(translation * rotation * current.scale_matrix);
-                //this->builder_map['L']->build_leaf(1.0f);
                 models.push_back('L');
                 break;
             }
@@ -170,7 +174,6 @@ void Interpreter::read_string(const std::string &predicate, std::vector<char>& m
             }
             default:
                 break;
-
         }
     }
 }

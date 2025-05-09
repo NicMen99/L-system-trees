@@ -15,7 +15,7 @@
 
 class Tree {
 public:
-    Tree(const std::vector<glm::mat4> &transf, const std::vector<char> &mods, std::shared_ptr<Mesh> branch, std::shared_ptr<Mesh> leaf, std::shared_ptr<Mesh> end);
+    Tree(const std::vector<glm::mat4> &transf, const std::vector<char> &mods, std::shared_ptr<Mesh> branch, std::shared_ptr<Mesh> leaf, std::shared_ptr<Mesh> end, std::shared_ptr<Mesh> junc);
     void render(Shader &shader, const glm::mat4 &model = glm::mat4(1.0f));
 private:
     std::vector<glm::mat4> transforms;
@@ -23,6 +23,7 @@ private:
     std::shared_ptr<Mesh> branch_ptr;
     std::shared_ptr<Mesh> leaf_ptr;
     std::shared_ptr<Mesh> end_ptr;
+    std::shared_ptr<Mesh> junc_ptr;
 };
 
 
