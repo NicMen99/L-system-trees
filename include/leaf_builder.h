@@ -9,15 +9,21 @@
 #include <glm/vec4.hpp>
 #include "abstract_builder.h"
 
+enum Type {
+    REGULAR,
+    PALM
+};
+
 class Leaf : public Drawer{
 public:
-    Leaf();
+    Leaf(const char* texture_path, Type type);
     ~Leaf() = default;
     void build_leaf(float size) override;
     std::shared_ptr<Mesh> getResult() override;
 private:
     std::shared_ptr<Mesh> mesh;
     unsigned int tID;
+    Type type;
 };
 
 

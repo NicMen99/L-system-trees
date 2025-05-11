@@ -11,7 +11,7 @@
 
 class Junction : public Drawer{
 public:
-    Junction(unsigned int resolution = 8);
+    Junction(const char* texture_path, unsigned int resolution = 8);
     ~Junction() override = default;
 
     void build_junciton(float radius) override;

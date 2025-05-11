@@ -11,7 +11,7 @@
 
 class Branch : public Drawer {
 public:
-    Branch(unsigned int resolution = 8);
+    Branch(const char* texture_path, unsigned int resolution = 8);
     ~Branch() override = default;
     void build_branch(float height, float R, float r) override;
     std::shared_ptr<Mesh> getResult() override;

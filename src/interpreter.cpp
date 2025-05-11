@@ -53,7 +53,7 @@ void Interpreter::read_string(const std::string &predicate, std::vector<char>& m
             case 'L': {
                 translation = glm::translate(glm::mat4(1.0f), current.position);
                 rotation = glm::mat4_cast(current.orientation);
-                transforms.push_back(translation * rotation * current.scale_matrix);
+                transforms.push_back(translation * rotation * scale(glm::mat4(1.0), glm::vec3(current.scale_matrix[1][1])));
                 models.push_back('L');
                 break;
             }
@@ -157,8 +157,10 @@ void Interpreter::read_string(const std::string &predicate, std::vector<char>& m
                 break;
             }
             case '%': {
-                this->state.scale_matrix = scale(this->state.scale_matrix, glm::vec3(1.0f, length_decay, 1.0f ));
-                this->state.step *= length_decay;
+                if (this->state.step * length_decay > init_length/5) {
+                    this->state.scale_matrix = scale(this->state.scale_matrix, glm::vec3(1.0f, length_decay, 1.0f ));
+                    this->state.step *= length_decay;
+                }
                 current = this->state;
                 break;
             }

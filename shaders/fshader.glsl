@@ -17,6 +17,7 @@ struct DirLight {
 
 uniform vec3 vPos;
 uniform sampler2D diffuse;
+uniform float alpha_discard;
 uniform DirLight light;
 
 
@@ -29,7 +30,7 @@ void main() {
     vec3 diffuse = light.diffuse * diff * texture(diffuse, tCoords).rgb;
 
     vec3 result = ambient + diffuse;
-    if(t_color.a < 0.9){
+    if(t_color.a < alpha_discard){
         discard;
     }
     color = vec4(result, 1.0);

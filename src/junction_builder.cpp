@@ -8,8 +8,8 @@
 
 #include "utils.h"
 
-Junction::Junction(unsigned int resolution) : resolution(resolution) {
-    this->tID = loadTexture("textures/Bark_007_SD/Bark_007_BaseColor.jpg");
+Junction::Junction(const char* texture_path, unsigned int resolution) : resolution(resolution) {
+    this->tID = loadTexture(texture_path);
 }
 
 void Junction::build_junciton(float radius) {

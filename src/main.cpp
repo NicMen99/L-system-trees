@@ -84,37 +84,83 @@ int main(int argc, char** argv) {
 
     Shader shader = Shader("shaders/vshader.glsl", "shaders/fshader.glsl");
 
-    // Standard hill tree
-    //std::map<char, std::map<std::string, float>> production_rules ={
-    //    {'P', std::map<std::string, float> {
-    //          {"[&F[&&L]PF]/////[&F[&&L]P]///////[&F[&&L]P]", 0.5},
-    //          {"[&F[&&L]P]/////////[&F[&&L]P]", 0.5}}},
-    //    {'F', std::map<std::string, float> {
-    //          {"X/////F", 0.2},
-    //          {"XPF", 0.2},
-    //          {"FF", 0.2},
-    //          {"F", 0.2},
-    //          {"FXP", 0.2}}},
-    //    {'X', std::map<std::string, float> {{"F", 1.0}}}
-    //};
+    // Standard hill tree Cactus float
+    // branch_radius = 0.1f;
+    // int iterations = 7;
+    // angle=22.5f;
+    // std::map<char, std::map<std::string, float>> production_rules ={
+    //     {'P', std::map<std::string, float> {
+    //           {"[&F[&&L]PF]/////[&F[&&L]P]///////[&F[&&L]P]", 0.5},
+    //           {"[&F[&&L]P]/////////[&F[&&L]P]", 0.5}}},
+    //     {'F', std::map<std::string, float> {
+    //           {"X/////F", 0.2},
+    //           {"XPF", 0.2},
+    //           {"FF", 0.2},
+    //           {"F", 0.2},
+    //           {"FXP", 0.2}}},
+    //     {'X', std::map<std::string, float> {{"F", 1.0}}}
+    // };
 
     // Cactus
+    // float branch_radius = 0.4f;
+    // int iterations = 4;
+    // angle=22.5f;
+    // std::map<char, std::map<std::string, float>> production_rules = {
+    //     {'F', std::map<std::string, float> {
+    //             {"F", 0.05},
+    //             {"FF", 0.6},
+    //             {"FJ", 0.1},
+    //             {"[B]F", 0.027},
+    //             {"[/B]F", 0.027},
+    //             {"[///B]F", 0.027},
+    //             {"[/////B]F", 0.027},
+    //             {"[///////B]F", 0.027},
+    //             {"[(B]F", 0.027},
+    //             {"[(((B]F", 0.027},
+    //             {"[(((((B]F", 0.027},
+    //             {"[(((((((B]F", 0.027}}
+    //     },
+    //     {'B', std::map<std::string, float> {{"!++++XJ----XF", 1.0}}}
+    // };
+
+    // European spruce like
+    // float branch_length = 1.5f;
+    // float branch_radius = 0.2f;
+    // float leaf_size = 3.0f;
+    // float radius_decay = 0.85f;
+    // int iterations = 7;
+    // std::map<char, std::map<std::string, float>> production_rules = {
+    //     {
+    //         'F', std::map<std::string, float> {
+    //                 {"X[[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]]//[&&&&&!!!!!!B]//[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]][&&&&&!!!!!!B]//[&&&&&!!!!!!B]//[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]]/[&&&&&!!!!!!B]//[&&&&&!!!!!!B]/[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]]/[!!!!!!&&&&&B]//[&&&&&!!!!!!B]/[!!!!!!&&&&&B]]F[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]]", 0.23},
+    //                 {"X[/[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]]//[&&&&&!!!!!!B]//[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]][&&&&&!!!!!!B]//[&&&&&!!!!!!B]//[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]]/[&&&&&!!!!!!B]///[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]][&&&&&!!!!!!B]///[!!!!!!&&&&&B]F[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]]", 0.23},
+    //                 {"X[/[&&&&&!!!!!!B]/[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]][&&&&&!!!!!!B]//[&&&&&!!!!!!B]//[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]][&&&&&!!!!!!B]/[!!!!!!&&&&&B]/[&&&&&!!!!!!B]//[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]][&&&&&!!!!!!B]//[!!!!!!&&&&&B]//[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]]]F[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]]", 0.23},
+    //                 {"X[//[&&&&&!!!!!!B]/[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]]//[&&&&&!!!!!!B]//[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]][&&&&&!!!!!!B]//[&&&&&!!!!!!B]//[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]]/[&&&&&!!!!!!B]//[!!!!!!&&&&&B]/[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]]]F[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]]", 0.23},
+    //                 {"X[[&&&&&&L]////[&&&&&&L]////[&&&&&&L]////[&&&&&&L]]", 0.08}
+    //         }
+    //     },
+    //     {
+    //         'B', std::map<std::string, float> {
+    //                 // {"X!%%[---L][////&&&L][+++L][((((&&&L]B", 1.0f},
+    //                 {"X!%%[---/L][+++(L]B", 1.0f},
+    //         }
+    //     }
+    // };
+
+
+    // Palm tree
     std::map<char, std::map<std::string, float>> production_rules = {
-        {'F', std::map<std::string, float> {
-                {"F", 0.05},
-                {"FF", 0.6},
-                {"FJ", 0.1},
-                {"[B]F", 0.027},
-                {"[/B]F", 0.027},
-                {"[///B]F", 0.027},
-                {"[/////B]F", 0.027},
-                {"[///////B]F", 0.027},
-                {"[(B]F", 0.027},
-                {"[(((B]F", 0.027},
-                {"[(((((B]F", 0.027},
-                {"[(((((((B]F", 0.027}}
+        {
+            'F', std::map<std::string, float> {
+                {"^XX!F", 0.8},
+                {"^!X", 0.2}
+            }
         },
-        {'B', std::map<std::string, float> {{"!++++XJ----XF", 1.0}}}
+        {
+            'T', std::map<std::string, float> {
+                {"J[^^^^^^^^^^^^^^^^^^^^L]//////////[^^^^^^^^^^^^^^^L]//////////[^^^^^^^^^^^^^^^^^^^^L]//////////[^^^^^^^^^^^^^^^L]//////////[^^^^^^^^^^^^^^^^^^^^L]//////////[^^^^^^^^^^^^^^^L]//////////[^^^^^^^^^^^^^^^^^^^^L]//////////[^^^^^^^^^^^^^^^L]", 1.0}
+            }
+        }
     };
 
     auto l = Lindenmayer(production_rules);
@@ -122,14 +168,17 @@ int main(int argc, char** argv) {
     std::vector<Tree> forest {};
 
     // Define tree construction variables
-    float branch_length = 1.0f;
-    float branch_radius = 0.2f;
+    float branch_length = 1.5f;
+    float branch_radius = 0.4f;
     float leaf_size = 2.0f;
+    float radius_decay = 0.9f;
     int iterations = 5;
+    float alpha_discard = 0.5;
+    float angle = 5.0f;
 
-    std::unique_ptr<Branch> sBranch = std::make_unique<Branch>(20);
-    std::unique_ptr<Leaf> sLeaf = std::make_unique<Leaf>();
-    std::unique_ptr<Junction> sJunc = std::make_unique<Junction>(20);
+    std::unique_ptr<Branch> sBranch = std::make_unique<Branch>("textures/palm_tree_bark_1k/textures/palm_tree_bark_diff_1k.jpg", 20);
+    std::unique_ptr<Leaf> sLeaf = std::make_unique<Leaf>("textures/Palm.png", PALM);
+    std::unique_ptr<Junction> sJunc = std::make_unique<Junction>("textures/palm_tree_bark_1k/textures/palm_tree_bark_diff_1k.jpg", 20);
     sBranch->build_branch(branch_length, branch_radius, branch_radius);
     sLeaf->build_leaf(leaf_size);
     sJunc->build_junciton(branch_radius);
@@ -141,14 +190,14 @@ int main(int argc, char** argv) {
     sBranch->build_branch(0.5f * branch_length, branch_radius, 0);
     std::shared_ptr<Mesh> end_ptr = sBranch->getResult();
 
-    Interpreter turtle = Interpreter(22.5f, glm::vec3(0.0f), branch_radius, branch_length);
+    Interpreter turtle = Interpreter(angle, glm::vec3(0.0f), branch_radius, branch_length, radius_decay);
 
     for (glm::vec3 position : cubePositions) {
         turtle.reset_interpreter(position);
         std::vector<char> models {};
         std::vector<glm::mat4> transforms {};
 
-        auto result = l.generate("XF", iterations, true);
+        auto result = l.generate("XFT", iterations, true);
         turtle.read_string(result, models, transforms);
         forest.emplace_back(transforms, models, branch_ptr, leaf_ptr, end_ptr, junc_ptr);
     }
@@ -171,6 +220,7 @@ int main(int argc, char** argv) {
         processInput(window);
 
         shader.use();
+        // Light settings
         shader.setVec3("light.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
         shader.setVec3("viewPos", camera.position);
         shader.setVec3("light.ambient", glm::vec3(0.7f, 0.7f, 0.7f));
@@ -180,6 +230,9 @@ int main(int argc, char** argv) {
         glm::mat4 projection = glm::perspective(glm::radians(camera.zoom), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 300.0f);
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
+
+        // Other settings
+        shader.setFloat("alpha_discard", alpha_discard);
 
         // Stuff
         for (Tree tree: forest) {

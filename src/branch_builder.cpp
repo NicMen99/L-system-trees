@@ -10,8 +10,8 @@
 
 #include "utils.h"
 
-Branch::Branch(unsigned int resolution): resolution(resolution) {
-    this->tID = loadTexture("textures/Bark_007_SD/Bark_007_BaseColor.jpg");
+Branch::Branch(const char* texture_path, unsigned int resolution): resolution(resolution) {
+    this->tID = loadTexture(texture_path);
 }
 
 void Branch::build_branch(float height, float R, float r) {
