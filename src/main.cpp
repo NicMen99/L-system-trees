@@ -149,11 +149,29 @@ int main(int argc, char** argv) {
 
 
     // Palm tree
+    // float branch_length = 1.5f;
+    // float branch_radius = 0.4f;
+    // float leaf_size = 2.5f;
+    // float radius_decay = 0.9f;
+    // int iterations = 5;
+    // float alpha_discard = 0.5;
+    // float angle = 5.0f;
     std::map<char, std::map<std::string, float>> production_rules = {
         {
             'F', std::map<std::string, float> {
-                {"^XX!F", 0.8},
-                {"^!X", 0.2}
+                {"^XX!F", 0.4},
+                {"XX!F", 0.4},
+                {"^!X", 0.1},
+                {"!X", 0.1}
+            }
+        },
+        {
+            'B', std::map<std::string, float> {
+                {"&X", 0.2},
+                {"//////&&X", 0.2},
+                {"/////////////////&X", 0.2},
+                {"//////////////////////////////////&X", 0.2},
+                {"///////////////////////////////////////////////////////&X", 0.2}
             }
         },
         {
@@ -170,7 +188,7 @@ int main(int argc, char** argv) {
     // Define tree construction variables
     float branch_length = 1.5f;
     float branch_radius = 0.4f;
-    float leaf_size = 2.0f;
+    float leaf_size = 2.5f;
     float radius_decay = 0.9f;
     int iterations = 5;
     float alpha_discard = 0.5;
@@ -197,7 +215,7 @@ int main(int argc, char** argv) {
         std::vector<char> models {};
         std::vector<glm::mat4> transforms {};
 
-        auto result = l.generate("XFT", iterations, true);
+        auto result = l.generate("BXFT", iterations, true);
         turtle.read_string(result, models, transforms);
         forest.emplace_back(transforms, models, branch_ptr, leaf_ptr, end_ptr, junc_ptr);
     }
